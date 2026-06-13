@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="AI Command" />
+  <meta name="theme-color" content="#080b16" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <title>AI Command Center</title>
+  <style>
+    :root{
+      --bg:#070914; --bg2:#0d1122; --panel:rgba(255,255,255,.08); --panel2:rgba(255,255,255,.12);
+      --line:rgba(255,255,255,.14); --text:#f7f8ff; --muted:#aab0ca; --hot:#8be9fd; --pink:#ff7ee7; --good:#78f8bd; --warn:#ffe087;
+      --danger:#ff8f9b; --shadow:0 18px 60px rgba(0,0,0,.35); --radius:26px;
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;margin:0;font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+    body:before{content:"";position:fixed;inset:-30%;background:radial-gradient(circle at 20% 20%,rgba(139,233,253,.28),transparent 27%),radial-gradient(circle at 80% 5%,rgba(255,126,231,.23),transparent 30%),radial-gradient(circle at 50% 90%,rgba(120,248,189,.12),transparent 30%),linear-gradient(135deg,#070914,#11162c 60%,#080b16);filter:saturate(1.12);z-index:-3}
+    .grain{position:fixed;inset:0;pointer-events:none;opacity:.18;z-index:-2;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E")}
+    .app{height:100%;display:grid;grid-template-rows:auto 1fr;padding:env(safe-area-inset-top) max(18px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));gap:14px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 8px 4px}.brand{display:flex;align-items:center;gap:12px}.orb{width:48px;height:48px;border-radius:18px;background:conic-gradient(from 180deg,var(--hot),var(--pink),var(--good),var(--hot));box-shadow:0 0 35px rgba(139,233,253,.36);position:relative}.orb:after{content:"";position:absolute;inset:8px;border-radius:13px;background:#0c1020}.title h1{font-size:24px;margin:0;letter-spacing:-.04em}.title p{margin:1px 0 0;color:var(--muted);font-size:13px}.header-actions{display:flex;gap:10px;align-items:center}.pill,.btn{border:1px solid var(--line);background:rgba(255,255,255,.08);color:var(--text);border-radius:999px;padding:10px 14px;font-weight:700;backdrop-filter:blur(20px);box-shadow:0 8px 20px rgba(0,0,0,.12)}.btn{cursor:pointer}.btn:active{transform:scale(.98)}.btn.hot{background:linear-gradient(135deg,rgba(139,233,253,.3),rgba(255,126,231,.25))}.btn.good{background:linear-gradient(135deg,rgba(120,248,189,.28),rgba(139,233,253,.16))}.btn.danger{background:rgba(255,143,155,.14);border-color:rgba(255,143,155,.35)}
+    main{min-height:0;display:grid;grid-template-columns:1.2fr .8fr;gap:14px}.col{min-height:0;display:grid;gap:14px}.left{grid-template-rows:1.05fr .95fr}.right{grid-template-rows:.7fr .8fr .7fr}.card{min-height:0;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.11),rgba(255,255,255,.06));border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(30px);overflow:hidden}.card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}.card h2{font-size:17px;margin:0;letter-spacing:-.02em}.sub{color:var(--muted);font-size:12px}.card-body{height:calc(100% - 62px);overflow:auto;padding:14px 18px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.metric{border:1px solid var(--line);background:rgba(0,0,0,.16);border-radius:20px;padding:14px}.metric strong{font-size:26px;display:block}.metric span{font-size:12px;color:var(--muted)}
+    .news-list,.todo-list,.note-list{display:grid;gap:10px}.news{border:1px solid var(--line);background:rgba(0,0,0,.18);border-radius:20px;padding:13px}.news.top{background:linear-gradient(135deg,rgba(139,233,253,.18),rgba(255,126,231,.12))}.news .row{display:flex;align-items:start;justify-content:space-between;gap:10px}.tag{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#071019;background:var(--hot);padding:5px 8px;border-radius:999px;font-weight:900;white-space:nowrap}.tag.promo{background:var(--good)}.tag.warn{background:var(--warn)}.tag.policy{background:#d4b3ff}.news h3{font-size:15px;margin:0 0 5px;line-height:1.22}.news p{margin:0;color:var(--muted);font-size:12px;line-height:1.35}.news a{color:var(--hot);text-decoration:none;font-weight:800}.controls{display:flex;gap:8px;flex-wrap:wrap}.input,.select,textarea{width:100%;border:1px solid var(--line);background:rgba(0,0,0,.22);color:var(--text);border-radius:16px;padding:12px 12px;font:inherit;outline:none}textarea{resize:none;min-height:70px}.form-row{display:grid;grid-template-columns:1fr auto;gap:8px}.todo{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;border:1px solid var(--line);background:rgba(0,0,0,.18);border-radius:18px;padding:12px}.todo input[type=checkbox]{width:22px;height:22px;accent-color:#78f8bd}.todo.done{opacity:.58}.todo.done .todo-title{text-decoration:line-through}.todo-title{font-weight:850;font-size:14px}.todo-meta{color:var(--muted);font-size:12px;margin-top:2px}.todo-note{color:#d7dbef;font-size:12px;margin-top:7px;line-height:1.35;white-space:pre-wrap}.icon-btn{border:0;background:rgba(255,255,255,.1);color:var(--text);border-radius:12px;padding:8px 9px;cursor:pointer}.agenda-day{display:grid;gap:9px}.agenda-item{display:grid;grid-template-columns:72px 1fr;gap:12px;align-items:start;border-left:3px solid var(--hot);background:rgba(0,0,0,.16);border-radius:16px;padding:10px}.agenda-time{font-weight:900;color:var(--hot);font-size:13px}.agenda-title{font-weight:800;font-size:13px}.connectors{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.connector{border:1px solid var(--line);background:rgba(0,0,0,.18);border-radius:18px;padding:12px}.connector strong{display:block;font-size:14px}.connector span{color:var(--muted);font-size:12px}.connector .status{margin-top:9px;font-size:11px;font-weight:900;color:var(--warn)}.settings{display:grid;gap:10px}.small{font-size:11px;color:var(--muted);line-height:1.35}.modal{position:fixed;inset:0;background:rgba(0,0,0,.54);display:none;place-items:center;z-index:20;padding:20px}.modal.show{display:grid}.dialog{width:min(680px,100%);max-height:88vh;overflow:auto;border:1px solid var(--line);background:rgba(10,14,29,.94);backdrop-filter:blur(35px);border-radius:30px;box-shadow:var(--shadow);padding:20px}.dialog h2{margin:0 0 12px}.dialog-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:14px}
+    #screensaver{position:fixed;inset:0;z-index:30;display:none;place-items:center;overflow:hidden;background:#02040b;color:white}#screensaver.show{display:grid}.space{position:absolute;inset:-10%;background:radial-gradient(circle at 30% 30%,rgba(139,233,253,.25),transparent 24%),radial-gradient(circle at 75% 65%,rgba(255,126,231,.22),transparent 27%),linear-gradient(120deg,#02040b,#0e1534,#0a0717);animation:drift 18s ease-in-out infinite alternate}.rings{position:absolute;width:60vmin;height:60vmin;border-radius:50%;border:1px solid rgba(255,255,255,.16);box-shadow:0 0 90px rgba(139,233,253,.18), inset 0 0 80px rgba(255,126,231,.07);animation:spin 18s linear infinite}.rings:before,.rings:after{content:"";position:absolute;inset:10%;border-radius:50%;border:1px solid rgba(139,233,253,.18)}.rings:after{inset:22%;border-color:rgba(255,126,231,.18)}.save-content{position:relative;text-align:center;padding:30px;max-width:860px}.save-clock{font-size:clamp(64px,13vw,142px);font-weight:950;letter-spacing:-.08em;text-shadow:0 0 45px rgba(139,233,253,.25)}.save-date{font-size:18px;color:var(--muted);font-weight:700}.ticker{margin:24px auto 0;max-width:760px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);border-radius:24px;padding:16px 20px;backdrop-filter:blur(20px)}.ticker strong{display:block;margin-bottom:5px}.ticker p{margin:0;color:#d9def7}.tap{margin-top:18px;color:rgba(255,255,255,.72);font-weight:800}@keyframes spin{to{transform:rotate(360deg)}}@keyframes drift{to{transform:scale(1.08) translate3d(-2%,2%,0)}}
+    @media(max-width:920px){body{overflow:auto}.app{height:auto;min-height:100%;overflow:visible}main{grid-template-columns:1fr}.right,.left{grid-template-rows:auto}.card{min-height:320px}.card-body{height:auto;max-height:520px}.grid3{grid-template-columns:1fr}.connectors{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="grain"></div>
+  <div class="app" id="app">
+    <header>
+      <div class="brand"><div class="orb"></div><div class="title"><h1>AI Command Center</h1><p>iPad dashboard • agenda • AI news • promo radar</p></div></div>
+      <div class="header-actions"><div class="pill" id="nowPill">Loading...</div><button class="btn hot" id="openSettings">Setup</button></div>
+    </header>
+    <main>
+      <section class="col left">
+        <article class="card">
+          <div class="card-head"><div><h2>Live AI News + Promo Radar</h2><div class="sub" id="newsSub">Refreshes hourly while open. Use the hourly ChatGPT reminder for closed-app checks.</div></div><div class="controls"><button class="btn good" id="refreshNews">Refresh</button><button class="btn" id="addNews">Add</button></div></div>
+          <div class="card-body"><div class="grid3" style="margin-bottom:12px"><div class="metric"><strong id="newsCount">0</strong><span>news items</span></div><div class="metric"><strong id="promoCount">0</strong><span>promo / free offers</span></div><div class="metric"><strong id="lastCheck">—</strong><span>last check</span></div></div><div class="news-list" id="newsList"></div></div>
+        </article>
+        <article class="card">
+          <div class="card-head"><div><h2>Daily Agenda + To‑Do</h2><div class="sub">Check tasks, add notes, export later.</div></div><button class="btn good" id="addTodoBtn">New task</button></div>
+          <div class="card-body"><div class="form-row" style="margin-bottom:10px"><input id="quickTodo" class="input" placeholder="Quick add: package orders, post TikToks, check AI promos..." /><button class="btn good" id="quickAdd">Add</button></div><div class="todo-list" id="todoList"></div></div>
+        </article>
+      </section>
+      <section class="col right">
+        <article class="card">
+          <div class="card-head"><div><h2>Today</h2><div class="sub" id="todayLabel">Agenda</div></div><button class="btn" id="resetDay">Reset demo</button></div>
+          <div class="card-body"><div class="agenda-day" id="agendaList"></div></div>
+        </article>
+        <article class="card">
+          <div class="card-head"><div><h2>Analytics Connections</h2><div class="sub">Future read-only analytics connectors.</div></div></div>
+          <div class="card-body"><div class="connectors" id="connectors"></div><p class="small" style="margin-top:12px">Important: real Shopify, YouTube, TikTok, Instagram, and X analytics should use OAuth through a backend. Do not paste private tokens into a random local HTML file.</p></div>
+        </article>
+        <article class="card">
+          <div class="card-head"><div><h2>Scratch Notes</h2><div class="sub">Auto-saves on this iPad.</div></div><button class="btn" id="exportData">Export</button></div>
+          <div class="card-body"><textarea id="notes" placeholder="Ideas, promos, account notes, content plan..."></textarea><p class="small">Data is stored locally in this browser with localStorage. Export backups before deleting Safari data.</p></div>
+        </article>
+      </section>
+    </main>
+  </div>
+  <section id="screensaver" aria-label="Inactive wallpaper">
+    <div class="space"></div><div class="rings"></div>
+    <div class="save-content"><div class="save-clock" id="saveClock">00:00</div><div class="save-date" id="saveDate">Tap anywhere to return</div><div class="ticker"><strong>AI Radar</strong><p id="saveTicker">Your latest AI headline will appear here.</p></div><div class="tap">tap screen to open dashboard</div></div>
+  </section>
+  <div class="modal" id="taskModal"><div class="dialog"><h2 id="taskModalTitle">Task</h2><div class="settings"><input class="input" id="taskTitle" placeholder="Task title"/><textarea id="taskNotes" placeholder="Detailed notes for this task"></textarea><input class="input" id="taskDue" type="datetime-local"/><select class="select" id="taskPriority"><option>Normal</option><option>High</option><option>Low</option></select></div><div class="dialog-actions"><button class="btn" data-close>Cancel</button><button class="btn good" id="saveTask">Save</button></div></div></div>
+  <div class="modal" id="settingsModal"><div class="dialog"><h2>Setup</h2><div class="settings"><label>News proxy URL <span class="small">optional, for real RSS/news fetching</span><input class="input" id="proxyUrl" placeholder="https://your-worker.yourname.workers.dev/news"/></label><label>Refresh interval while open<select class="select" id="refreshInterval"><option value="3600000">Every hour</option><option value="1800000">Every 30 minutes</option><option value="900000">Every 15 minutes</option></select></label><label>Screensaver idle time<select class="select" id="idleTime"><option value="300000">5 minutes</option><option value="60000">1 minute testing</option><option value="10000">10 seconds testing</option></select></label><p class="small">This app is already set to show the interactive wallpaper after 5 minutes. The hourly checking continues only while the app is open; for closed-app checks, use the ChatGPT hourly task I set up.</p></div><div class="dialog-actions"><button class="btn" data-close>Close</button><button class="btn good" id="saveSettings">Save setup</button></div></div></div>
+  <script>
+    const $ = sel => document.querySelector(sel);
+    const store = {
+      get(key, fallback){ try{return JSON.parse(localStorage.getItem(key)) ?? fallback}catch{return fallback} },
+      set(key, value){ localStorage.setItem(key, JSON.stringify(value)) }
+    };
+    const defaults = {
+      settings:{proxyUrl:'', refreshInterval:3600000, idleTime:300000},
+      notes:'',
+      todos:[
+        {id:crypto.randomUUID(),title:'Check AI news + promos',notes:'Look for free credits, student offers, startup offers, model drops, and outages.',due:'',priority:'High',done:false},
+        {id:crypto.randomUUID(),title:'Review UrBeauty Shopify analytics',notes:'Traffic, add-to-carts, conversion rate, top products.',due:'',priority:'Normal',done:false},
+        {id:crypto.randomUUID(),title:'Plan today’s content posts',notes:'TikTok/Shorts/Reels ideas, hooks, captions, product angles.',due:'',priority:'Normal',done:false}
+      ],
+      news:[
+        {id:crypto.randomUUID(),type:'policy',title:'Anthropic disables Fable 5 and Mythos 5 access',summary:'Reports say access was halted after a U.S. export-control order. Track this closely because it affects subscriptions and model access.',url:'',time:new Date().toISOString(),source:'Seed'},
+        {id:crypto.randomUUID(),type:'promo',title:'Promo radar ready',summary:'Add free credits, startup offers, student plans, and AI subscription deals here. Hook up the Cloudflare Worker for live checks.',url:'',time:new Date().toISOString(),source:'Local'},
+        {id:crypto.randomUUID(),type:'news',title:'Your live AI feed needs a proxy endpoint',summary:'Browsers often block direct RSS/news fetches. Use the included Cloudflare Worker file for a reliable live feed.',url:'',time:new Date().toISOString(),source:'Setup'}
+      ],
+      agenda:[
+        {time:'09:00',title:'Open dashboard + scan urgent AI alerts'},
+        {time:'11:00',title:'Store check: products, prices, orders'},
+        {time:'14:00',title:'Content batch: hooks, clips, captions'},
+        {time:'18:00',title:'Daily review: wins, problems, tomorrow plan'}
+      ]
+    };
+    let data = store.get('aiCommandData', defaults);
+    data = {...defaults, ...data, settings:{...defaults.settings, ...(data.settings||{})}};
+    const save = () => store.set('aiCommandData', data);
+    const formatTime = d => d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+    const escapeHTML = s => String(s||'').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    function tick(){ const d=new Date(); $('#nowPill').textContent=`${d.toLocaleDateString([], {weekday:'short', month:'short', day:'numeric'})} • ${formatTime(d)}`; $('#todayLabel').textContent=d.toLocaleDateString([], {weekday:'long', month:'long', day:'numeric'}); $('#saveClock').textContent=formatTime(d); $('#saveDate').textContent=d.toLocaleDateString([], {weekday:'long', month:'long', day:'numeric'}); }
+    function renderNews(){
+      const news = [...data.news].sort((a,b)=>new Date(b.time)-new Date(a.time));
+      $('#newsCount').textContent = news.filter(n=>n.type!=='promo').length;
+      $('#promoCount').textContent = news.filter(n=>n.type==='promo').length;
+      const last = news[0]?.time ? new Date(news[0].time) : null;
+      $('#lastCheck').textContent = last ? formatTime(last) : '—';
+      $('#newsList').innerHTML = news.map((n,i)=>`<article class="news ${i===0?'top':''}"><div class="row"><div><h3>${escapeHTML(n.title)}</h3><p>${escapeHTML(n.summary)}</p>${n.url?`<p style="margin-top:7px"><a href="${escapeHTML(n.url)}" target="_blank" rel="noopener">Open source</a></p>`:''}</div><span class="tag ${n.type==='promo'?'promo':n.type==='policy'?'policy':n.type==='warn'?'warn':''}">${escapeHTML(n.type||'news')}</span></div><p style="margin-top:8px">${escapeHTML(n.source||'')} • ${new Date(n.time).toLocaleString()}</p></article>`).join('');
+      $('#saveTicker').textContent = news[0]?.title || 'No headlines yet.';
+    }
+    function renderTodos(){
+      $('#todoList').innerHTML = data.todos.map(t=>`<article class="todo ${t.done?'done':''}"><input type="checkbox" ${t.done?'checked':''} data-check="${t.id}"/><div><div class="todo-title">${escapeHTML(t.title)}</div><div class="todo-meta">${escapeHTML(t.priority)}${t.due?' • '+new Date(t.due).toLocaleString():''}</div>${t.notes?`<div class="todo-note">${escapeHTML(t.notes)}</div>`:''}</div><div><button class="icon-btn" data-edit="${t.id}">Edit</button><button class="icon-btn" data-del="${t.id}" style="margin-top:6px">Delete</button></div></article>`).join('');
+      document.querySelectorAll('[data-check]').forEach(el=>el.onclick=e=>{const t=data.todos.find(x=>x.id===e.target.dataset.check); t.done=e.target.checked; save(); renderTodos();});
+      document.querySelectorAll('[data-del]').forEach(el=>el.onclick=e=>{data.todos=data.todos.filter(x=>x.id!==e.target.dataset.del); save(); renderTodos();});
+      document.querySelectorAll('[data-edit]').forEach(el=>el.onclick=e=>openTask(e.target.dataset.edit));
+    }
+    function renderAgenda(){ $('#agendaList').innerHTML = data.agenda.map(a=>`<div class="agenda-item"><div class="agenda-time">${escapeHTML(a.time)}</div><div class="agenda-title">${escapeHTML(a.title)}</div></div>`).join(''); }
+    function renderConnectors(){
+      const items=['Shopify','Instagram','TikTok','YouTube','X / Twitter','Facebook'];
+      $('#connectors').innerHTML=items.map(name=>`<div class="connector"><strong>${name}</strong><span>Read-only analytics planned</span><div class="status">Needs secure OAuth backend</div></div>`).join('');
+    }
+    function renderAll(){ tick(); renderNews(); renderTodos(); renderAgenda(); renderConnectors(); $('#notes').value=data.notes||''; $('#proxyUrl').value=data.settings.proxyUrl||''; $('#refreshInterval').value=String(data.settings.refreshInterval); $('#idleTime').value=String(data.settings.idleTime); }
+    let editingId=null;
+    function openTask(id=null){ editingId=id; const t=id?data.todos.find(x=>x.id===id):{title:'',notes:'',due:'',priority:'Normal'}; $('#taskModalTitle').textContent=id?'Edit task':'New task'; $('#taskTitle').value=t.title||''; $('#taskNotes').value=t.notes||''; $('#taskDue').value=t.due||''; $('#taskPriority').value=t.priority||'Normal'; $('#taskModal').classList.add('show'); }
+    function closeModals(){ document.querySelectorAll('.modal').forEach(m=>m.classList.remove('show')); }
+    document.querySelectorAll('[data-close]').forEach(b=>b.onclick=closeModals);
+    $('#addTodoBtn').onclick=()=>openTask();
+    $('#saveTask').onclick=()=>{ const task={id:editingId||crypto.randomUUID(),title:$('#taskTitle').value.trim()||'Untitled task',notes:$('#taskNotes').value.trim(),due:$('#taskDue').value,priority:$('#taskPriority').value,done: editingId ? (data.todos.find(t=>t.id===editingId)?.done||false) : false}; if(editingId){data.todos=data.todos.map(t=>t.id===editingId?task:t)}else data.todos.unshift(task); save(); closeModals(); renderTodos(); };
+    $('#quickAdd').onclick=()=>{ const v=$('#quickTodo').value.trim(); if(!v)return; data.todos.unshift({id:crypto.randomUUID(),title:v,notes:'',due:'',priority:'Normal',done:false}); $('#quickTodo').value=''; save(); renderTodos(); };
+    $('#quickTodo').addEventListener('keydown',e=>{if(e.key==='Enter')$('#quickAdd').click()});
+    $('#notes').addEventListener('input',e=>{data.notes=e.target.value; save();});
+    $('#openSettings').onclick=()=>$('#settingsModal').classList.add('show');
+    $('#saveSettings').onclick=()=>{data.settings.proxyUrl=$('#proxyUrl').value.trim(); data.settings.refreshInterval=Number($('#refreshInterval').value); data.settings.idleTime=Number($('#idleTime').value); save(); setupTimers(); closeModals();};
+    $('#resetDay').onclick=()=>{data.agenda=structuredClone(defaults.agenda); save(); renderAgenda();};
+    $('#addNews').onclick=()=>{const title=prompt('Headline or promo title?'); if(!title)return; const summary=prompt('Details / notes?')||''; data.news.unshift({id:crypto.randomUUID(),type:title.toLowerCase().includes('promo')||title.toLowerCase().includes('free')?'promo':'news',title,summary,url:'',time:new Date().toISOString(),source:'Manual'}); save(); renderNews();};
+    async function refreshNews(){
+      const url=data.settings.proxyUrl;
+      if(!url){ data.news.unshift({id:crypto.randomUUID(),type:'warn',title:'Live news proxy not connected yet',summary:'Open Setup and add your Cloudflare Worker news URL. The app is still fully usable for manual tracking and the hourly ChatGPT check.',url:'',time:new Date().toISOString(),source:'App'}); save(); renderNews(); return; }
+      try{
+        const res=await fetch(url,{cache:'no-store'}); if(!res.ok) throw new Error('Bad status '+res.status); const incoming=await res.json();
+        const items=(incoming.items||incoming.news||[]).slice(0,24).map(x=>({id:crypto.randomUUID(),type:(x.title||'').toLowerCase().match(/free|promo|credit|student|startup|deal/) ? 'promo' : 'news',title:x.title||'Untitled',summary:x.summary||x.description||x.source||'',url:x.url||x.link||'',time:x.publishedAt||x.pubDate||new Date().toISOString(),source:x.source||'Live'}));
+        const seen=new Set(data.news.map(n=>n.title));
+        data.news=[...items.filter(i=>!seen.has(i.title)),...data.news].slice(0,80); save(); renderNews();
+      }catch(err){ data.news.unshift({id:crypto.randomUUID(),type:'warn',title:'News refresh failed',summary:String(err.message||err),url:'',time:new Date().toISOString(),source:'App'}); save(); renderNews(); }
+    }
+    $('#refreshNews').onclick=refreshNews;
+    $('#exportData').onclick=()=>{ const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ai-command-center-backup.json'; a.click(); URL.revokeObjectURL(a.href); };
+    let idleTimer, refreshTimer;
+    function showSaver(){ $('#screensaver').classList.add('show'); }
+    function hideSaver(){ $('#screensaver').classList.remove('show'); resetIdle(); }
+    function resetIdle(){ clearTimeout(idleTimer); idleTimer=setTimeout(showSaver, data.settings.idleTime||300000); }
+    ['pointerdown','touchstart','keydown','mousemove','scroll'].forEach(ev=>document.addEventListener(ev,()=>{ if($('#screensaver').classList.contains('show')) hideSaver(); else resetIdle(); },{passive:true}));
+    $('#screensaver').addEventListener('click',hideSaver);
+    function setupTimers(){ clearInterval(refreshTimer); resetIdle(); refreshTimer=setInterval(refreshNews, data.settings.refreshInterval||3600000); }
+    if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{})); }
+    setInterval(tick,1000); renderAll(); setupTimers(); save();
+  </script>
+</body>
+</html>
